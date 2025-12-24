@@ -27,7 +27,7 @@ const App: React.FC = () => {
     reader.onload = (event) => {
       const text = event.target?.result as string;
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-      // ORANGE DATASET LINKAGE POINT
+      // ORANGE DATASET LINKAGE POINT: THIS LINE IDENTIFIES AND MAPS DATA FROM UPLOADED ORANGE .TAB FILES
       const dataLine = lines.find(l => {
         const isHeader = l.startsWith('#') || l.includes('continuous') || l.includes('discrete') || l.includes('feature') || l.includes('meta') || l.includes('class') || l.toLowerCase().includes('age');
         return !isHeader && /^\d/.test(l);
@@ -50,10 +50,10 @@ const App: React.FC = () => {
           });
           setError(null);
         } else {
-          setError("Incomplete row detected in Orange file.");
+          setError("Incomplete data row in file.");
         }
       } else {
-        setError("Invalid file format. Please upload a standard Orange .tab or CSV.");
+        setError("Unsupported file format. Please use Orange .tab or CSV.");
       }
     };
     reader.readAsText(file);
@@ -104,7 +104,7 @@ const App: React.FC = () => {
         document.getElementById('results-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 200);
     } catch (err: any) {
-      setError("Analysis Failed. Ensure API keys are active or verify parameters.");
+      setError("Analysis Failed. Please verify your connection.");
     } finally {
       setLoading(false);
     }
@@ -243,12 +243,12 @@ const App: React.FC = () => {
                      <div className="h-px bg-slate-100 flex-[4]"></div>
                    </div>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <InputGroup label="CP Type (1-4)" name="cp" value={features.cp} onChange={handleInputChange} options={[{ label: 'Typical', value: 1 }, { label: 'Atypical', value: 2 }, { label: 'Non-Anginal', value: 3 }, { label: 'Asymptomatic (4)', value: 4 }]} />
-                      <InputGroup label="Thal Marker" name="thal" value={features.thal} onChange={handleInputChange} options={[{ label: 'Normal (3)', value: 3 }, { label: 'Fixed (6)', value: 6 }, { label: 'Reversable (7)', value: 7 }]} />
+                      <InputGroup label={`CP Type (1-4) ${features.cp === 4 ? '⚠️' : ''}`} name="cp" value={features.cp} onChange={handleInputChange} options={[{ label: 'Typical', value: 1 }, { label: 'Atypical', value: 2 }, { label: 'Non-Anginal', value: 3 }, { label: 'Asymptomatic (4)', value: 4 }]} />
+                      <InputGroup label={`Thal Marker ${[6, 7].includes(features.thal) ? '⚠️' : ''}`} name="thal" value={features.thal} onChange={handleInputChange} options={[{ label: 'Normal (3)', value: 3 }, { label: 'Fixed (6)', value: 6 }, { label: 'Reversable (7)', value: 7 }]} />
                    </div>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                     <InputGroup label="Oldpeak (>1.0 = Risk)" name="oldpeak" value={features.oldpeak} onChange={handleInputChange} step={0.1} />
-                     <InputGroup label="CA Vessels (≥1 = Risk)" name="ca" value={features.ca} onChange={handleInputChange} min={0} max={3} />
+                     <InputGroup label={`Oldpeak (>1.0 Risk) ${features.oldpeak > 1.0 ? '⚠️' : ''}`} name="oldpeak" value={features.oldpeak} onChange={handleInputChange} step={0.1} />
+                     <InputGroup label={`CA Vessels (≥1 Risk) ${features.ca >= 1 ? '⚠️' : ''}`} name="ca" value={features.ca} onChange={handleInputChange} min={0} max={3} />
                    </div>
                 </div>
               </div>
